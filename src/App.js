@@ -3,20 +3,22 @@ import { Route } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import Profile from "./pages/Profile";
 import ProfilePage from "./pages/ProfilePage";
+import { Switch } from "react-router-dom/cjs/react-router-dom.min";
 
 function App() {
   return (
     <>
       {/* <SignUp /> */}
-      <Route exact path={"/"}>
-        <SignUp />
-      </Route>
-      <Route path={"/dummy"}>
-        <Profile />
-      </Route>
-      <Route path={"/profilepage"}>
+      <Switch>
+        <Route exact path={"/"}>
+          <SignUp />
+        </Route>
+        <Route path={"/dummy"}>
+          <Profile />
+        </Route>
         <ProfilePage />
-      </Route>
+        <Route path={"/profilepage"} element={<ProfilePage />} />
+      </Switch>
     </>
   );
 }
