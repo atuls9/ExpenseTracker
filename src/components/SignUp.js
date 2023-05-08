@@ -1,17 +1,51 @@
 import axios from "axios";
 import React, { useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 const SignUp = () => {
   const [errorShow, setErrorShow] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const history = useHistory();
 
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
   //   const firebaseKey = "AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc";
+  const switchHandler = () => {
+    setIsLogin(!isLogin);
+    setErrorShow(false);
+  };
 
-  const submitHandler = (e) => {
+  const loginHandler = (e) => {
     e.preventDefault();
+    setErrorShow(false);
+    if (emailRef.current.value && passwordRef.current.value) {
+      axios
+        .post(
+          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc`,
+          {
+            email: emailRef.current.value,
+            password: passwordRef.current.value,
+            returnSecureToken: true,
+          }
+        )
+        .then((res) => {
+          console.log("user has logged in successfully");
+          console.log(res.data.idToken);
+          localStorage.setItem("token", res.data.idToken);
+          history.push("/dummy");
+          //   console.log("res.data", res.data);
+        })
+        .catch((error) => {
+          alert(error.response.data.error.message);
+        });
+    } else {
+      setErrorShow(true);
+    }
+  };
 
+  const signUpHandler = (e) => {
+    e.preventDefault();
     setErrorShow(false);
     if (
       emailRef.current.value &&
@@ -29,6 +63,7 @@ const SignUp = () => {
         )
         .then((res) => {
           console.log("user has successful registered");
+          setIsLogin(!isLogin);
           //   console.log("res.data", res.data);
         })
         .catch((error) => {
@@ -41,13 +76,19 @@ const SignUp = () => {
   return (
     <div className="container ">
       <div className="row">
-        <div className="col-md-6 mx-auto mt-5 p-3 bg-primary text-white text-center rounded-2">
-          <h3>Sign Up</h3>
+        <div className="col-md-6 mx-auto mt-5 p-3 text-white text-center ">
+          <div
+            className={`${
+              isLogin ? "bg-info p-3 rounded-2 " : "bg-warning p-3 rounded-2 "
+            }`}
+          >
+            <h3>{isLogin ? "Sign Up" : "Login"}</h3>
+          </div>
         </div>
       </div>
-      <div className="row ">
-        <div className="col-md-5 mx-auto mt-3">
-          <form onSubmit={submitHandler}>
+      <div className="row  ">
+        <div className="col-md-5 mx-auto mt-3 border border-3 border-info rounded-3 p-3 ">
+          <form>
             <div className="form-group">
               <label className="form-label fw-bolder">Email</label>
               <input
@@ -66,15 +107,17 @@ const SignUp = () => {
                 ref={passwordRef}
               />
             </div>
-            <div className="form-group mt-3">
-              <label className="form-label fw-bolder">Confirm Password</label>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                className="form-control"
-                ref={confirmPasswordRef}
-              />
-            </div>
+            {isLogin && (
+              <div className="form-group mt-3">
+                <label className="form-label fw-bolder">Confirm Password</label>
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  className="form-control"
+                  ref={confirmPasswordRef}
+                />
+              </div>
+            )}
 
             <div className="d-grid ">
               {errorShow && (
@@ -82,14 +125,32 @@ const SignUp = () => {
                   All Fields Are Mandatory !!!
                 </h4>
               )}
-              <button
-                className="btn btn-primary mt-3 p-2 rounded-pill"
-                type="submit"
-              >
-                Sign Up
-              </button>
+              {isLogin && (
+                <button
+                  className="btn btn-info mt-3 p-2 fw-bold rounded-pill"
+                  onClick={signUpHandler}
+                >
+                  Sign Up
+                </button>
+              )}
+              {!isLogin && (
+                <button
+                  className="btn btn-warning mt-3 p-2 rounded-pill fw-bold"
+                  onClick={loginHandler}
+                >
+                  Login
+                </button>
+              )}
             </div>
           </form>
+          <div className="d-grid">
+            <button
+              className="btn btn-outline-success mt-3 p-2 rounded fw-bold"
+              onClick={switchHandler}
+            >
+              {isLogin ? " Have an account?? Login " : "create acount"}
+            </button>
+          </div>
         </div>
       </div>{" "}
     </div>
