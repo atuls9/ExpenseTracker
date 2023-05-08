@@ -1,7 +1,8 @@
 import "./App.css";
 import { Route } from "react-router-dom";
-import SignUp from "./components/SignUp";
-import DummyScreen from "./components/DummyScreen";
+import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -11,7 +12,10 @@ function App() {
         <SignUp />
       </Route>
       <Route path={"/dummy"}>
-        <DummyScreen />
+        <Profile />
+      </Route>
+      <Route path={"/profilepage"}>
+        <ProfilePage />
       </Route>
     </>
   );
