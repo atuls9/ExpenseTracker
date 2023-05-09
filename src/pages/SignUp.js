@@ -7,6 +7,7 @@ const SignUp = () => {
   const [errorShow, setErrorShow] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const history = useHistory();
+  // const historyforget = useHistory();
   const authCtx = useContext(AuthContext);
 
   const emailRef = useRef();
@@ -16,6 +17,11 @@ const SignUp = () => {
   const switchHandler = () => {
     setIsLogin(!isLogin);
     setErrorShow(false);
+  };
+
+  const goToforgetpassword = (e) => {
+    e.preventDefault();
+    history.push("/forgetpassword");
   };
 
   const loginHandler = (e) => {
@@ -145,6 +151,14 @@ const SignUp = () => {
                   onClick={loginHandler}
                 >
                   Login
+                </button>
+              )}
+              {!isLogin && (
+                <button
+                  className="btn btn-link fw-bold"
+                  onClick={goToforgetpassword}
+                >
+                  Forget Password
                 </button>
               )}
             </div>

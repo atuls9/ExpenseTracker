@@ -5,6 +5,7 @@ import Profile from "./pages/Profile";
 import ProfilePage from "./pages/ProfilePage";
 import { Switch } from "react-router-dom/cjs/react-router-dom.min";
 import Navbar from "./components/Navbar";
+import ForgetPassword from "./pages/ForgetPassword";
 // import { Navbar } from "react-bootstrap";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
     <>
       {/* <SignUp /> */}
       <Navbar />
+
       <Switch>
         <Route exact path={"/"}>
           <SignUp />
@@ -19,7 +21,10 @@ function App() {
         <Route path={"/dummy"}>
           <Profile />
         </Route>
-        <ProfilePage />
+        <Route path={"/forgetpassword"}>
+          <ForgetPassword />
+        </Route>
+
         <Route path={"/profilepage"} element={<ProfilePage />} />
       </Switch>
     </>
