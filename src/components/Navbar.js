@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useContext } from "react";
 import AuthContext from "../store/AuthContext";
+import { useHistory } from "react-router-dom";
 
 const Navbar = () => {
   const authCtx = useContext(AuthContext);
+  const history = useHistory();
 
   const verifyEmailHandler = () => {
     axios
@@ -20,6 +22,11 @@ const Navbar = () => {
         console.log(err.response.data.error.message);
         alert(err.response.data.error.message);
       });
+  };
+
+  const logoutHandler = () => {
+    authCtx.logout();
+    history.push("/");
   };
 
   return (
@@ -44,6 +51,11 @@ const Navbar = () => {
                 onClick={verifyEmailHandler}
               >
                 Verify Email
+              </button>
+            )}
+            {authCtx.isLoggedIn && (
+              <button className="btn btn-danger ms-4 " onClick={logoutHandler}>
+                Logout
               </button>
             )}
           </div>
