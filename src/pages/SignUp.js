@@ -1,11 +1,13 @@
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
+import AuthContext from "../store/AuthContext";
 
 const SignUp = () => {
   const [errorShow, setErrorShow] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const history = useHistory();
+  const authCtx = useContext(AuthContext);
 
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -31,8 +33,9 @@ const SignUp = () => {
         )
         .then((res) => {
           console.log("user has logged in successfully");
-          console.log(res.data.idToken);
-          localStorage.setItem("token", res.data.idToken);
+          // console.log(res.data.idToken);
+          authCtx.login(res.data.idToken);
+          // localStorage.setItem("token", res.data.idToken);
           history.push("/dummy");
           //   console.log("res.data", res.data);
         })
@@ -63,6 +66,9 @@ const SignUp = () => {
         )
         .then((res) => {
           console.log("user has successful registered");
+          const token = res.data.idToken;
+          console.log("res.data", token);
+
           setIsLogin(!isLogin);
           //   console.log("res.data", res.data);
         })
