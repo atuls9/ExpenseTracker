@@ -1,11 +1,13 @@
 import axios from "axios";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
+import AuthContext from "../store/AuthContext";
 
 const ProfilePage = () => {
   const nameRef = useRef();
   const photoRef = useRef();
+  const authCtx = useContext(AuthContext);
 
-  const getData = () => {
+  function getData() {
     const token = localStorage.getItem("token");
 
     axios
@@ -16,21 +18,30 @@ const ProfilePage = () => {
         }
       )
       .then((res) => {
-        console.log("res.data profile data", res.data.users[0]);
-        nameRef.current.value = res.data.users[0].displayName;
-        photoRef.current.value = res.data.users[0].photoUrl;
+        console.log("res.data imported profile data", res.data.users[0]);
+        if (!res.data.users[0].displayName && !res.data.users[0].photoUrl) {
+          nameRef.current.value = "";
+          photoRef.current.value = "";
+        } else {
+          nameRef.current.value = res.data.users[0].displayName;
+          photoRef.current.value = res.data.users[0].photoUrl;
+          authCtx.isProfileCompleted = true;
+          authCtx.setUname(res.data.users[0].displayName);
+        }
+
         // nameRef.current.value = res.data.users[0].displayName;
       })
       .catch((error) => console.log(error.response.data.error.message));
-  };
+  }
   useEffect(() => {
+    console.log("get data called");
     getData();
+    // eslint-disable-next-line
   }, []);
 
   const updateHandler = () => {
     // e.preventDefault();
     const token = localStorage.getItem("token");
-
     axios
       .post(
         "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc",

@@ -39,10 +39,19 @@ const SignUp = () => {
         )
         .then((res) => {
           console.log("user has logged in successfully");
-          // console.log(res.data.idToken);
+          console.log(res.data);
+          // console.log("displayName", res.data.displayName);
+          // console.log("profilePicture", res.data.profilePicture);
+          if (res.data.displayName && res.data.profilePicture) {
+            authCtx.setProfile(true);
+            console.log("authCtx", authCtx);
+            //  console.log(authCtx);
+          } else {
+            authCtx.isProfileCompleted = false;
+          }
           authCtx.login(res.data.idToken);
           // localStorage.setItem("token", res.data.idToken);
-          history.push("/dummy");
+          history.push("/profile");
           //   console.log("res.data", res.data);
         })
         .catch((error) => {
@@ -71,9 +80,9 @@ const SignUp = () => {
           }
         )
         .then((res) => {
-          console.log("user has successful registered");
-          const token = res.data.idToken;
-          console.log("res.data", token);
+          // console.log("user has successful registered");
+          // const token = res.data.idToken;
+          // console.log("res.data", token);
 
           setIsLogin(!isLogin);
           //   console.log("res.data", res.data);
@@ -116,6 +125,7 @@ const SignUp = () => {
                 type="password"
                 placeholder="Password"
                 className="form-control"
+                autoComplete="on"
                 ref={passwordRef}
               />
             </div>
@@ -123,7 +133,7 @@ const SignUp = () => {
               <div className="form-group mt-3">
                 <label className="form-label fw-bolder">Confirm Password</label>
                 <input
-                  type="password"
+                  // type="password"
                   placeholder="Confirm Password"
                   className="form-control"
                   ref={confirmPasswordRef}
