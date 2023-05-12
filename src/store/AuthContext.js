@@ -9,16 +9,22 @@ const AuthContext = React.createContext({
   setUname: () => {},
   login: (token) => {},
   logout: () => {},
-  addExpense: () => {},
+  addExpense: (item) => {},
   removeExpense: () => {},
+  setItems: () => {},
 });
 
 export const AuthContextProvider = (props) => {
-  const firstToken = localStorage.getItem("token");
-  const [token, setToken] = useState(firstToken);
+  let firstToken;
   const [profile, setProfile] = useState(false);
   const [uname, setUname] = useState("");
   const [items, setItems] = useState([]);
+  if (localStorage.getItem("token")) {
+    firstToken = localStorage.getItem("token");
+  } else {
+    firstToken = "";
+  }
+  const [token, setToken] = useState(firstToken);
 
   let userLoggedIn = !!token;
 
@@ -37,12 +43,14 @@ export const AuthContextProvider = (props) => {
     // eslint-disable-next-line
   }, []);
   const loginHandler = (tkn) => {
+    setItems([]);
     setToken(tkn);
     localStorage.setItem("token", tkn);
   };
 
   const logoutHandler = () => {
     setToken(null);
+    localStorage.removeItem("email");
     localStorage.removeItem("token");
   };
 
@@ -52,6 +60,7 @@ export const AuthContextProvider = (props) => {
     items: items,
     isLoggedIn: userLoggedIn,
     isProfileCompleted: profile,
+    setItems: setItems,
     setProfile: setProfile,
     setUname: setUname,
     login: loginHandler,

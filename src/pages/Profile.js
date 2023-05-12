@@ -1,8 +1,9 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import AuthContext from "../store/AuthContext";
 import { Container, Col, Row } from "react-bootstrap";
 import ExpenseShowOnScreen from "../components/ExpenseShowOnScreen";
+import axios from "axios";
 
 const Profile = () => {
   const history = useHistory();
@@ -10,11 +11,37 @@ const Profile = () => {
   const categoryRef = useRef();
   const descriptionRef = useRef();
   const moneyRef = useRef();
+  const url = "https://expensetracker-8b210-default-rtdb.firebaseio.com";
+  const emailEx = localStorage.getItem("email").replace(/[^a-zA-Z0-9 ]/g, "");
 
   const goToPrifile = () => {
     history.push("/profilepage");
   };
 
+  function getData() {
+    axios
+      .get(`${url}/expenses/${emailEx}.json`)
+      .then((res) => {
+        console.log(res.data);
+        console.log(Object.keys(res.data));
+        const newItems = [];
+        Object.values(res.data).forEach((el) => {
+          newItems.push({
+            ...JSON.parse(el.body),
+            key: newItems.length + 1,
+            id: newItems.length + 1,
+          });
+        });
+        console.log("newItems", newItems);
+        authCtx.setItems(newItems);
+      })
+      .catch((error) => console.log(error.message));
+  }
+
+  useEffect(() => {
+    getData();
+    // eslint-disable-next-line
+  }, []);
   const addExpenseHandler = () => {
     const item = {
       category: categoryRef.current.value,
@@ -22,6 +49,13 @@ const Profile = () => {
       money: moneyRef.current.value,
     };
     console.log("item in profile", item);
+
+    axios
+      .post(`${url}/expenses/${emailEx}.json`, {
+        body: JSON.stringify(item),
+      })
+      .then((res) => console.log("res data from axios", res.data))
+      .catch((error) => console.log(error.message));
 
     authCtx.addExpense(item);
   };

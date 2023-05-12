@@ -28,6 +28,7 @@ const SignUp = () => {
     e.preventDefault();
     setErrorShow(false);
     if (emailRef.current.value && passwordRef.current.value) {
+      localStorage.setItem("email", emailRef.current.value);
       axios
         .post(
           `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc`,
