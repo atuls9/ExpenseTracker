@@ -1,31 +1,53 @@
 import React, { useContext } from "react";
 import { Container, Row, Table } from "react-bootstrap";
 import AuthContext from "../store/AuthContext";
+import axios from "axios";
 
-const ExpenseShowOnScreen = () => {
+const ExpenseShowOnScreen = (props) => {
+  const emailEx = localStorage.getItem("email").replace(/[^a-zA-Z0-9 ]/g, "");
+  const url = `https://expensetracker-8b210-default-rtdb.firebaseio.com`;
+
   const authCtx = useContext(AuthContext);
 
-  const removeItem = (id) => {
-    authCtx.removeExpense(id);
+  const removeItem = (item) => {
+    const urlRemoveItem = `${url}/expenses/${emailEx}/${item.firebaseID}.json`;
+
+    axios
+      .delete(urlRemoveItem)
+      .then((res) => {
+        console.log("Expense successfuly deleted");
+
+        authCtx.removeExpense(item.firebaseID);
+      })
+      .catch((error) => console.log(error.message));
+  };
+
+  const editExpense = (item) => {
+    props.editItem(item);
   };
 
   const Items = authCtx.items.map((item) => {
     return (
-      <tr className="text-dark fw-bold" key={item.id}>
-        <td>{item.id}</td>
+      <tr className="text-dark fw-bold" key={item.firebaseID}>
+        {/* <td>{item.id}</td> */}
         <td className="text-dark fw-bold">{item.category}</td>
         <td>{item.description}</td>
         <td className="text-dark fw-bold"> ₹ {item.money}.00</td>
         <td>
           <div className="d-grid ">
-            <button className="btn btn-success">Edit</button>
+            <button
+              className="btn btn-success"
+              onClick={() => editExpense(item)}
+            >
+              Edit
+            </button>
           </div>
         </td>
         <td>
           <div className="d-grid">
             <button
               className="btn btn-danger "
-              onClick={() => removeItem(item.id)}
+              onClick={() => removeItem(item)}
             >
               Delete
             </button>
@@ -41,7 +63,7 @@ const ExpenseShowOnScreen = () => {
         <Table striped="columns">
           <thead>
             <tr className="fs-5 text-danger">
-              <th>Sr. No.</th>
+              {/* <th>Sr. No.</th> */}
               <th className="fs-5 text-danger">Category</th>
               <th>Description</th>
               <th className="fs-5 text-danger">Money Spend</th>

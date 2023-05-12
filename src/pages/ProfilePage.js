@@ -18,7 +18,7 @@ const ProfilePage = () => {
         }
       )
       .then((res) => {
-        console.log("res.data imported profile data", res.data.users[0]);
+        // console.log("res.data imported profile data", res.data.users[0]);
         if (!res.data.users[0].displayName && !res.data.users[0].photoUrl) {
           nameRef.current.value = "";
           photoRef.current.value = "";
@@ -34,7 +34,7 @@ const ProfilePage = () => {
       .catch((error) => console.log(error.response.data.error.message));
   }
   useEffect(() => {
-    console.log("get data called");
+    // console.log("get data called");
     getData();
     // eslint-disable-next-line
   }, []);

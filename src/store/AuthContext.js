@@ -12,6 +12,7 @@ const AuthContext = React.createContext({
   addExpense: (item) => {},
   removeExpense: () => {},
   setItems: () => {},
+  setFirebaseID: () => {},
 });
 
 export const AuthContextProvider = (props) => {
@@ -19,6 +20,8 @@ export const AuthContextProvider = (props) => {
   const [profile, setProfile] = useState(false);
   const [uname, setUname] = useState("");
   const [items, setItems] = useState([]);
+  const [firebaseID, setFirebaseID] = useState([]);
+
   if (localStorage.getItem("token")) {
     firstToken = localStorage.getItem("token");
   } else {
@@ -33,10 +36,10 @@ export const AuthContextProvider = (props) => {
       ...items,
       { ...item, key: items.length + 1, id: items.length + 1 },
     ]);
-    console.log(" items in authcontext", items);
+    // console.log(" items in authcontext", items);
   };
   const removeExpenseHandler = (id) => {
-    setItems(items.filter((item) => id !== item.id));
+    setItems(items.filter((item) => id !== item.firebaseID));
   };
   useEffect(() => {
     loginHandler(token);
@@ -58,6 +61,7 @@ export const AuthContextProvider = (props) => {
     token: token,
     uname: uname,
     items: items,
+    firebaseID: firebaseID,
     isLoggedIn: userLoggedIn,
     isProfileCompleted: profile,
     setItems: setItems,
@@ -67,6 +71,7 @@ export const AuthContextProvider = (props) => {
     logout: logoutHandler,
     addExpense: addExpenseHandler,
     removeExpense: removeExpenseHandler,
+    setFirebaseID: setFirebaseID,
   };
 
   return (
