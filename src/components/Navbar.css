@@ -1,0 +1,5 @@
+.active {
+  /* background-color: rgb(98, 71, 222); */
+  color: red;
+  transform: scale(1.15);
+}

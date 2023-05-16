@@ -1,11 +1,11 @@
 import axios from "axios";
-import React, { useEffect, useRef, useContext } from "react";
-import AuthContext from "../store/AuthContext";
+import React, { useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const ProfilePage = () => {
+  const history = useHistory();
   const nameRef = useRef();
   const photoRef = useRef();
-  const authCtx = useContext(AuthContext);
 
   function getData() {
     const token = localStorage.getItem("token");
@@ -25,8 +25,6 @@ const ProfilePage = () => {
         } else {
           nameRef.current.value = res.data.users[0].displayName;
           photoRef.current.value = res.data.users[0].photoUrl;
-          authCtx.isProfileCompleted = true;
-          authCtx.setUname(res.data.users[0].displayName);
         }
 
         // nameRef.current.value = res.data.users[0].displayName;
@@ -38,7 +36,9 @@ const ProfilePage = () => {
     getData();
     // eslint-disable-next-line
   }, []);
-
+  const cancelHandler = () => {
+    history.push("/profile");
+  };
   const updateHandler = () => {
     // e.preventDefault();
     const token = localStorage.getItem("token");
@@ -94,7 +94,10 @@ const ProfilePage = () => {
             >
               Update
             </button>
-            <button className="ms-5 me-5 p-3 btn btn-danger fw-bold">
+            <button
+              className="ms-5 me-5 p-3 btn btn-danger fw-bold"
+              onClick={cancelHandler}
+            >
               Cancel
             </button>
           </div>

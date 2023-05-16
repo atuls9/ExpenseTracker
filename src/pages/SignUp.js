@@ -1,19 +1,18 @@
 import axios from "axios";
-import React, { useContext, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import AuthContext from "../store/AuthContext";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store/auth";
 
 const SignUp = () => {
   const [errorShow, setErrorShow] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const history = useHistory();
-  // const historyforget = useHistory();
-  const authCtx = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
-  //   const firebaseKey = "AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc";
   const switchHandler = () => {
     setIsLogin(!isLogin);
     setErrorShow(false);
@@ -40,20 +39,14 @@ const SignUp = () => {
         )
         .then((res) => {
           console.log("user has logged in successfully");
-          console.log(res.data);
-          // console.log("displayName", res.data.displayName);
-          // console.log("profilePicture", res.data.profilePicture);
-          if (res.data.displayName && res.data.profilePicture) {
-            authCtx.setProfile(true);
-            console.log("authCtx", authCtx);
-            //  console.log(authCtx);
-          } else {
-            authCtx.isProfileCompleted = false;
-          }
-          authCtx.login(res.data.idToken);
-          // localStorage.setItem("token", res.data.idToken);
+          localStorage.setItem("token", res.data.idToken);
           history.push("/profile");
-          //   console.log("res.data", res.data);
+
+          dispatch(authActions.login());
+          console.log(res.data);
+          if (res.data.displayName && res.data.profilePicture) {
+          } else {
+          }
         })
         .catch((error) => {
           alert(error.response.data.error.message);
@@ -81,12 +74,7 @@ const SignUp = () => {
           }
         )
         .then((res) => {
-          // console.log("user has successful registered");
-          // const token = res.data.idToken;
-          // console.log("res.data", token);
-
           setIsLogin(!isLogin);
-          //   console.log("res.data", res.data);
         })
         .catch((error) => {
           alert(error.response.data.error.message);
@@ -134,7 +122,6 @@ const SignUp = () => {
               <div className="form-group mt-3">
                 <label className="form-label fw-bolder">Confirm Password</label>
                 <input
-                  // type="password"
                   placeholder="Confirm Password"
                   className="form-control"
                   ref={confirmPasswordRef}

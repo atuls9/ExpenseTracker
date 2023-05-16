@@ -1,18 +1,25 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import AuthContext from "../store/AuthContext";
 import { Container, Col, Row } from "react-bootstrap";
 import ExpenseShowOnScreen from "../components/ExpenseShowOnScreen";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { expenseActions } from "../store/expenses";
+import { authActions } from "../store/auth";
 
 const Profile = () => {
+  const item = useSelector((state) => state.expenses.items);
+  const token = localStorage.getItem("token");
+  const isProfileCompleted = useSelector(
+    (state) => state.auth.isProfileCompleted
+  );
+  const dispatch = useDispatch();
   const history = useHistory();
-  const authCtx = useContext(AuthContext);
   const categoryRef = useRef();
   const descriptionRef = useRef();
   const moneyRef = useRef();
   const url = "https://expensetracker-8b210-default-rtdb.firebaseio.com";
-  const emailEx = localStorage.getItem("email").replace(/[^a-zA-Z0-9 ]/g, "");
+  let emailEx = localStorage.getItem("email").replace(/[^a-zA-Z0-9 ]/g, "");
 
   const goToPrifile = () => {
     history.push("/profilepage");
@@ -22,47 +29,59 @@ const Profile = () => {
     axios
       .get(`${url}/expenses/${emailEx}.json`)
       .then((res) => {
-        // console.log(Object.keys(res.data));
         const firebaseIDs = Object.keys(res.data);
-        // console.log("firebaseIDs,", firebaseIDs);
         const newItems = [];
         Object.values(res.data).forEach((el) => {
           newItems.push({
             ...JSON.parse(el.body),
-            key: firebaseIDs[newItems.length],
             firebaseID: firebaseIDs[newItems.length],
+            key: firebaseIDs[newItems.length],
           });
         });
-        // console.log("newItems", newItems);
-        authCtx.setItems(newItems);
+        dispatch(expenseActions.getItems(newItems));
       })
       .catch((error) => console.log(error.message));
+
+    axios
+      .post(
+        "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDLLMTZRT-kIaaMJfTn3TFJKlmvB179Yvc",
+        {
+          idToken: token,
+        }
+      )
+      .then((res) => {
+        if (!res.data.users[0].displayName && !res.data.users[0].photoUrl) {
+        } else {
+          dispatch(authActions.profileCompleted());
+        }
+      })
+      .catch((error) => console.log(error.response.data.error.message));
   }
 
   useEffect(() => {
     getData();
     // eslint-disable-next-line
   }, []);
+
   const addExpenseHandler = () => {
     const item = {
       category: categoryRef.current.value,
       description: descriptionRef.current.value,
       money: moneyRef.current.value,
     };
-    // console.log("item in profile", item);
 
     axios
       .post(`${url}/expenses/${emailEx}.json`, {
         body: JSON.stringify(item),
       })
       .then((res) => {
-        // console.log("res data from axios", res.data.name);
-
-        authCtx.addExpense({
+        const newItem = {
           ...item,
           firebaseID: res.data.name,
           key: res.data.name,
-        });
+        };
+        dispatch(expenseActions.addExpense(newItem));
+
         categoryRef.current.value = "Category";
         descriptionRef.current.value = "";
         moneyRef.current.value = "";
@@ -71,7 +90,6 @@ const Profile = () => {
   };
 
   const editItem = (item) => {
-    getData();
     categoryRef.current.value = item.category;
     descriptionRef.current.value = item.description;
     moneyRef.current.value = item.money;
@@ -80,8 +98,7 @@ const Profile = () => {
       .delete(`${url}/expenses/${emailEx}/${item.firebaseID}.json`)
       .then((res) => {
         console.log(res);
-
-        authCtx.removeExpense(item.firebaseID);
+        dispatch(expenseActions.removeExpense(item.firebaseID));
       })
       .catch((error) => console.log(error.message));
   };
@@ -89,7 +106,7 @@ const Profile = () => {
     <>
       <div>
         <h1>Welcome to Expense Tracker!!!</h1>
-        {!authCtx.isProfileCompleted && (
+        {!isProfileCompleted && (
           <h3 className="float-end me-4">
             Your profile is incomplete
             <button
@@ -100,6 +117,20 @@ const Profile = () => {
               Complete Now{" "}
             </button>
           </h3>
+        )}
+        {isProfileCompleted && (
+          <button
+            className="btn btn-primary float-end me-5"
+            style={{
+              marginTop: "-7rem ",
+              position: "fixed",
+              marginLeft: "90%",
+              zIndex: 1,
+            }}
+            onClick={goToPrifile}
+          >
+            Profile
+          </button>
         )}
       </div>
       <h3 className="text-center mt-3">Add Expenses</h3>
@@ -168,7 +199,7 @@ const Profile = () => {
           </Col>
         </Row>
       </Container>
-      {authCtx.items.length && <ExpenseShowOnScreen editItem={editItem} />}
+      {!!item.length && <ExpenseShowOnScreen editItem={editItem} />}
     </>
   );
 };
