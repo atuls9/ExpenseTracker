@@ -19,32 +19,34 @@ function App() {
     // eslint-disable-next-line
   }, []);
   const isLoggedIn = useSelector((state) => state.auth.isAuthenticated);
+  const theme = useSelector((state) => state.theme.darkTheme);
   return (
     <>
       <Navbar />
-
-      <Switch>
-        <Route exact path={"/"}>
-          <SignUp />
-        </Route>
-        {isLoggedIn && (
-          <Route exact path={"/profile"}>
-            <Profile />
+      <div className={`${theme ? "light" : "dark"}`}>
+        <Switch>
+          <Route exact path={"/"}>
+            <SignUp />
           </Route>
-        )}
+          {isLoggedIn && (
+            <Route exact path={"/profile"}>
+              <Profile />
+            </Route>
+          )}
 
-        <Route path={"/forgetpassword"}>
-          <ForgetPassword />
-        </Route>
-        {isLoggedIn && (
-          <Route path={"/profilepage"}>
-            <ProfilePage />
+          <Route path={"/forgetpassword"}>
+            <ForgetPassword />
           </Route>
-        )}
-        <Route path={"*"}>
-          <SignUp />
-        </Route>
-      </Switch>
+          {isLoggedIn && (
+            <Route path={"/profilepage"}>
+              <ProfilePage />
+            </Route>
+          )}
+          <Route path={"*"}>
+            <SignUp />
+          </Route>
+        </Switch>
+      </div>
     </>
   );
 }

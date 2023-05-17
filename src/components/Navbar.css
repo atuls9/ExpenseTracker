@@ -3,3 +3,32 @@
   color: red;
   transform: scale(1.15);
 }
+
+.container {
+  background-color: white;
+}
+
+.heading {
+  background-color: #ff00ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.waviy {
+  position: relative;
+}
+.waviy span {
+  position: relative;
+  display: inline-block;
+  font-size: 40px;
+  color: #800080;
+
+  animation: flip 2s infinite;
+  animation-delay: calc(0.2s * var(--i));
+}
+@keyframes flip {
+  0%,
+  80% {
+    transform: rotateY(360deg);
+  }
+}

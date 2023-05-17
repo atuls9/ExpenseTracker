@@ -11,11 +11,18 @@ const expensesSlice = createSlice({
       state.total = +state.total + +action.payload.money;
       console.log("state", state.total);
     },
+    removeAll(state) {
+      state.items = [];
+    },
     removeExpense(state, action) {
       state.items = state.items.filter(
-        (el) => el.firebaseID !== action.payload
+        (el) => el.firebaseID !== action.payload.firebaseID
       );
-      state.total = +state.total - +action.payload.money;
+      if (state.items.length === 0) {
+        state.total = 0;
+      } else {
+        state.total = +state.total - +action.payload.money;
+      }
     },
     getItems(state, action) {
       state.items = action.payload;

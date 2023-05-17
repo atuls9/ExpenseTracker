@@ -23,9 +23,19 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
-
+.dark {
+  background-color: blanchedalmond;
+  height: 100vh;
+}
+.light {
+  background-color: rgb(107, 9, 99);
+  height: 100vh;
+}
 .App-link {
   color: #61dafb;
+}
+#root {
+  height: 100%;
 }
 
 @keyframes App-logo-spin {

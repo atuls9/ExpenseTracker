@@ -9,6 +9,7 @@ import { authActions } from "../store/auth";
 
 const Profile = () => {
   const item = useSelector((state) => state.expenses.items);
+  const theme = useSelector((state) => state.theme.darkTheme);
   const token = localStorage.getItem("token");
   const isProfileCompleted = useSelector(
     (state) => state.auth.isProfileCompleted
@@ -64,7 +65,7 @@ const Profile = () => {
   }, []);
 
   const addExpenseHandler = () => {
-    const item = {
+    const Item = {
       category: categoryRef.current.value,
       description: descriptionRef.current.value,
       money: moneyRef.current.value,
@@ -72,16 +73,16 @@ const Profile = () => {
 
     axios
       .post(`${url}/expenses/${emailEx}.json`, {
-        body: JSON.stringify(item),
+        body: JSON.stringify(Item),
       })
       .then((res) => {
         const newItem = {
-          ...item,
+          ...Item,
           firebaseID: res.data.name,
           key: res.data.name,
         };
         dispatch(expenseActions.addExpense(newItem));
-
+        console.log("item", item);
         categoryRef.current.value = "Category";
         descriptionRef.current.value = "";
         moneyRef.current.value = "";
@@ -98,12 +99,20 @@ const Profile = () => {
       .delete(`${url}/expenses/${emailEx}/${item.firebaseID}.json`)
       .then((res) => {
         console.log(res);
-        dispatch(expenseActions.removeExpense(item.firebaseID));
+        dispatch(expenseActions.removeExpense(item));
       })
       .catch((error) => console.log(error.message));
   };
+  const dynamicStyles = {
+    color: theme ? "red" : "blue",
+    // fontSize: theme ? "24px" : "16px",
+    fontWeight: theme ? "bold" : "normal",
+    paddingBottom: "16px",
+    paddingTop: "100px",
+    // position: "auto",
+  };
   return (
-    <>
+    <div style={dynamicStyles}>
       <div>
         <h1>Welcome to Expense Tracker!!!</h1>
         {!isProfileCompleted && (
@@ -122,8 +131,7 @@ const Profile = () => {
           <button
             className="btn btn-primary float-end me-5"
             style={{
-              marginTop: "-7rem ",
-              position: "fixed",
+              marginTop: "-3rem ",
               marginLeft: "90%",
               zIndex: 1,
             }}
@@ -134,7 +142,7 @@ const Profile = () => {
         )}
       </div>
       <h3 className="text-center mt-3">Add Expenses</h3>
-      <Container className="mt-2 bg-info p-4 rounded-3">
+      <Container id="atul" className="mt-2 bg-info  p-4  rounded-3">
         <Row>
           <Col>
             <label className="fw-bold me-1 text-danger fs-5">
@@ -200,7 +208,7 @@ const Profile = () => {
         </Row>
       </Container>
       {!!item.length && <ExpenseShowOnScreen editItem={editItem} />}
-    </>
+    </div>
   );
 };
 

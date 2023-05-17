@@ -33,7 +33,7 @@ const ForgetPassword = () => {
   };
 
   return (
-    <div className="container ">
+    <div className="container-fluid " style={{ height: "670px" }}>
       <div className="row">
         <div className="col-md-6 mx-auto mt-5 p-3 text-white text-center ">
           <div className="bg-danger bg-gradient p-3 rounded-2 ">
